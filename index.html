@@ -117,19 +117,6 @@
   .human-line .hl-item { display: inline-flex; align-items: center; gap: 6px; background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 7px 16px; font-size: .84rem; font-weight: 600; color: var(--ink-2); }
   .human-line .hl-label { font-size: .8rem; color: var(--ink-3); font-weight: 600; margin-right: 4px; }
 
-  /* ===== 数字员工 ===== */
-  .staff-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; }
-  .staff-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 18px; text-align: center; transition: all .25s; }
-  .staff-card:hover { transform: translateY(-4px); box-shadow: 0 14px 34px rgba(15,23,42,.08); border-color: rgba(114,9,183,.35); }
-  .staff-card .s-avatar { width: 56px; height: 56px; margin: 0 auto 12px; border-radius: 16px; background: var(--grad); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: #fff; }
-  .staff-card:nth-child(2) .s-avatar { background: linear-gradient(135deg, #0ea5e9, #2563eb); }
-  .staff-card:nth-child(3) .s-avatar { background: linear-gradient(135deg, #10b981, #059669); }
-  .staff-card:nth-child(4) .s-avatar { background: linear-gradient(135deg, #f59e0b, #ea580c); }
-  .staff-card:nth-child(5) .s-avatar { background: linear-gradient(135deg, #f43f5e, #be123c); }
-  .staff-card:nth-child(6) .s-avatar { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
-  .staff-card h3 { font-size: .98rem; font-weight: 700; margin-bottom: 4px; }
-  .staff-card p { font-size: .78rem; color: var(--ink-2); }
-
   /* ===== 供电站 ===== */
   .power-wrap { background: radial-gradient(900px 400px at 90% 0%, rgba(14,165,233,.14), transparent 55%), radial-gradient(700px 400px at 5% 100%, rgba(67,97,238,.12), transparent 55%), #0d1428; border-radius: 26px; padding: 52px 44px; color: #fff; }
   .power-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
@@ -149,21 +136,6 @@
   .power-viz .models span { font-size: .74rem; padding: 5px 12px; border-radius: 999px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); color: #dbe3ff; }
   .power-viz .os-row { margin-top: 16px; display: flex; justify-content: center; gap: 10px; }
   .power-viz .os-row span { font-size: .74rem; font-weight: 700; padding: 6px 14px; border-radius: 10px; background: rgba(255,255,255,.1); color: #fff; border: 1px solid rgba(255,255,255,.18); }
-
-  /* ===== 为什么选我们（一行） ===== */
-  .why-line { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-  .why-item { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 16px; text-align: center; }
-  .why-item .w-ic { font-size: 1.7rem; margin-bottom: 8px; }
-  .why-item h3 { font-size: .95rem; font-weight: 700; }
-
-  /* ===== CTA ===== */
-  .cta { background: var(--grad); border-radius: 24px; max-width: 1000px; margin: 0 auto; padding: 52px 40px; text-align: center; color: #fff; position: relative; overflow: hidden; }
-  .cta::before { content: ""; position: absolute; inset: 0; background: radial-gradient(500px 260px at 80% -20%, rgba(255,255,255,.25), transparent 60%); }
-  .cta h2 { font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 800; position: relative; }
-  .cta p { opacity: .9; margin: 12px auto 0; max-width: 520px; font-size: .95rem; position: relative; }
-  .cta .btn { margin-top: 28px; position: relative; padding: 14px 36px; font-size: .96rem; background: #fff; color: #3a0ca3; }
-  .cta .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-  .cta .note { margin-top: 14px; font-size: .76rem; opacity: .7; position: relative; }
 
   /* ===== Footer ===== */
   footer { background: var(--night); color: #94a3b8; padding: 30px 24px; }
@@ -187,7 +159,6 @@
     .flow-big { grid-template-columns: repeat(2, 1fr); }
     .power-grid { grid-template-columns: 1fr; }
     .power-wrap { padding: 38px 24px; }
-    .why-line { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 520px) {
     .flow-big { grid-template-columns: 1fr; }
@@ -204,12 +175,11 @@
     <a href="/" class="brand"><span class="logo">🐙</span>NineClaw</a>
     <div class="nav-links">
       <a href="#how">怎么跑</a>
-      <a href="#staff">数字员工</a>
       <a href="#power">供电站</a>
     </div>
     <div class="nav-actions">
       <a href="https://console.nineclaw.cc" class="btn btn-ghost">登录</a>
-      <a href="#contact" class="btn btn-primary">联系</a>
+      <a href="mailto:sales@nineclaw.cc?subject=咨询 NineClaw AI 工厂" class="btn btn-primary">联系</a>
     </div>
   </div>
 </nav>
@@ -289,24 +259,6 @@
   </div>
 </section>
 
-<!-- 数字员工 -->
-<section id="staff" class="bg-soft">
-  <div class="section-inner">
-    <div class="section-title reveal">
-      <div class="eyebrow">DIGITAL STAFF</div>
-      <h2>数字员工 · 拖入即用</h2>
-    </div>
-    <div class="staff-grid">
-      <div class="staff-card reveal"><div class="s-avatar">💻</div><h3>研发数字人</h3><p>写代码 · 评审 · 文档</p></div>
-      <div class="staff-card reveal"><div class="s-avatar">🧪</div><h3>测试数字人</h3><p>用例 · 回归 · 缺陷</p></div>
-      <div class="staff-card reveal"><div class="s-avatar">🎧</div><h3>售后数字人</h3><p>工单 · 排查 · 知识库</p></div>
-      <div class="staff-card reveal"><div class="s-avatar">💬</div><h3>客服数字人</h3><p>7×24 接待 · 咨询</p></div>
-      <div class="staff-card reveal"><div class="s-avatar">📈</div><h3>销售数字人</h3><p>线索 · 方案 · 报价</p></div>
-      <div class="staff-card reveal"><div class="s-avatar">🧩</div><h3>职业技能包</h3><p>文档 · PPT · 视频</p></div>
-    </div>
-  </div>
-</section>
-
 <!-- 供电站 -->
 <section id="power">
   <div class="section-inner">
@@ -334,34 +286,6 @@
           <div class="os-row"><span>🪟 Windows</span><span>🐧 Linux</span></div>
         </div>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- 为什么选我们 -->
-<section id="why" class="bg-soft">
-  <div class="section-inner">
-    <div class="section-title reveal">
-      <div class="eyebrow">WHY NINECLAW</div>
-      <h2>为什么选我们</h2>
-    </div>
-    <div class="why-line">
-      <div class="why-item reveal"><div class="w-ic">🛡️</div><h3>数据安全</h3></div>
-      <div class="why-item reveal"><div class="w-ic">⚡</div><h3>稳定可靠</h3></div>
-      <div class="why-item reveal"><div class="w-ic">🧾</div><h3>账单透明</h3></div>
-      <div class="why-item reveal"><div class="w-ic">🤝</div><h3>专属支持</h3></div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<section id="contact">
-  <div class="section-inner">
-    <div class="cta reveal">
-      <h2>为企业建一条 24h AI 生产线</h2>
-      <p>从一个真实任务开始体验。</p>
-      <a href="mailto:sales@nineclaw.cc?subject=预约 NineClaw AI 工厂演示" class="btn">📮 联系九爪章科技</a>
-      <div class="note">面向企业提供咨询与账号开通 · 暂不开放公开注册</div>
     </div>
   </div>
 </section>
