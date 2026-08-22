@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NineClaw · AI 工厂 — 让 AI 为你 24 小时工作</title>
+<meta name="description" content="九爪章科技 AI 工厂：开一个任务就是拉一条自动化生产线，拖入研发、测试、客服、销售数字员工，让它们 24 小时协作交付。配套 NineClaw 供电站，统一接入主流大模型。">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #4361ee;
+    --primary-dark: #3a0ca3;
+    --accent: #7209b7;
+    --ink: #0f172a;
+    --ink-2: #475569;
+    --ink-3: #94a3b8;
+    --bg: #ffffff;
+    --bg-soft: #f6f8fc;
+    --line: #e2e8f0;
+    --grad: linear-gradient(135deg, #4361ee 0%, #7209b7 100%);
+    --night: #0b1020;
+    --night-2: #111a35;
+    --radius: 16px;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: var(--ink); background: var(--bg); line-height: 1.6;
+  }
+  a { color: inherit; text-decoration: none; }
+  .grad-text {
+    background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  /* ===== Nav ===== */
+  .nav {
+    position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,.92);
+    backdrop-filter: blur(12px); border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto; padding: 13px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.12rem; }
+  .brand .logo {
+    width: 34px; height: 34px; border-radius: 9px; background: var(--grad);
+    display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.05rem;
+  }
+  .nav-links { display: flex; gap: 30px; font-size: .9rem; color: var(--ink-2); font-weight: 500; }
+  .nav-links a:hover { color: var(--primary); }
+  .nav-actions { display: flex; gap: 10px; align-items: center; }
+  .btn {
+    display: inline-block; padding: 9px 20px; border-radius: 10px; font-size: .88rem;
+    font-weight: 600; cursor: pointer; border: none; transition: all .2s;
+  }
+  .btn-primary { background: var(--grad); color: #fff; }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(67,97,238,.35); }
+  .btn-ghost { background: transparent; color: var(--ink-2); border: 1.5px solid var(--line); }
+  .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+  .btn-light { background: #fff; color: var(--primary-dark); }
+  .btn-light:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+
+  /* ===== Hero ===== */
+  .hero {
+    background:
+      radial-gradient(1000px 480px at 85% -10%, rgba(114,9,183,.35), transparent 60%),
+      radial-gradient(800px 420px at 8% 15%, rgba(67,97,238,.35), transparent 55%),
+      var(--night);
+    color: #fff; padding: 96px 24px 60px; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 80px;
+    background: linear-gradient(to bottom, transparent, rgba(11,16,32,.9));
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px; padding: 7px 18px; border-radius: 999px;
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16);
+    color: #c7d2fe; font-size: .82rem; font-weight: 600; margin-bottom: 26px;
+  }
+  .hero-badge .dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+  .hero h1 { font-size: clamp(2.2rem, 5.2vw, 3.6rem); font-weight: 800; line-height: 1.18; letter-spacing: -.02em; }
+  .hero h1 .grad-text { background: linear-gradient(135deg, #818cf8, #c084fc 55%, #f0abfc); -webkit-background-clip: text; background-clip: text; }
+  .hero p.sub { max-width: 680px; margin: 22px auto 0; color: #a5b4d0; font-size: 1.06rem; }
+  .hero-cta { margin-top: 36px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .hero-cta .btn { padding: 13px 30px; font-size: .95rem; border-radius: 12px; }
+  .hero-cta .btn-line { background: transparent; color: #dbe3ff; border: 1.5px solid rgba(255,255,255,.3); }
+  .hero-cta .btn-line:hover { border-color: #a5b4fc; color: #fff; }
+
+  /* ===== 生产线视觉 ===== */
+  .line-viz { margin: 64px auto 0; max-width: 980px; position: relative; padding: 10px 0; }
+  .line-viz .track { position: absolute; top: 50%; left: 4%; right: 4%; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(129,140,248,.55), rgba(192,132,252,.55), transparent);
+    overflow: hidden; }
+  .line-viz .track::after {
+    content: ""; position: absolute; top: 0; left: -30%; width: 30%; height: 100%;
+    background: linear-gradient(90deg, transparent, #fff, transparent);
+    animation: flow 3.2s linear infinite;
+  }
+  @keyframes flow { from { left: -30%; } to { left: 100%; } }
+  .line-viz .nodes { position: relative; display: flex; justify-content: space-between; }
+  .line-node {
+    width: 108px; display: flex; flex-direction: column; align-items: center; gap: 8px;
+    background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.12);
+    border-radius: 14px; padding: 12px 6px 10px; backdrop-filter: blur(6px);
+    transition: all .25s;
+  }
+  .line-node:hover { transform: translateY(-4px); border-color: rgba(165,180,252,.6); box-shadow: 0 12px 30px rgba(67,97,238,.3); }
+  .line-node .avatar {
+    width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; background: linear-gradient(135deg, rgba(67,97,238,.35), rgba(114,9,183,.35));
+    border: 1px solid rgba(255,255,255,.2);
+  }
+  .line-node .role { font-size: .72rem; font-weight: 600; color: #c7d2fe; }
+  .line-node .status { font-size: .62rem; color: #4ade80; display: flex; align-items: center; gap: 4px; }
+  .line-node .status::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: #4ade80; }
+  .line-node.manager .avatar { background: linear-gradient(135deg, rgba(249,115,22,.5), rgba(244,63,94,.4)); }
+  .line-node.pm .avatar { background: linear-gradient(135deg, rgba(251,146,60,.5), rgba(234,88,12,.4)); }
+  .line-node.dev .avatar { background: linear-gradient(135deg, rgba(67,97,238,.6), rgba(37,99,235,.4)); }
+  .line-node.qa .avatar { background: linear-gradient(135deg, rgba(16,185,129,.5), rgba(5,150,105,.4)); }
+  .line-node.mkt .avatar { background: linear-gradient(135deg, rgba(168,85,247,.55), rgba(114,9,183,.4)); }
+  .line-legend {
+    margin-top: 26px; display: flex; justify-content: center; gap: 26px; flex-wrap: wrap;
+    color: #8b9cc8; font-size: .8rem; font-weight: 500;
+  }
+  .line-legend b { color: #4ade80; font-size: .9rem; }
+
+  /* ===== Sections ===== */
+  section { padding: 76px 24px; }
+  .section-inner { max-width: 1200px; margin: 0 auto; }
+  .section-title { text-align: center; margin-bottom: 46px; }
+  .section-title .eyebrow {
+    color: var(--primary); font-size: .8rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  }
+  .section-title h2 { font-size: clamp(1.7rem, 3.2vw, 2.3rem); font-weight: 800; margin-top: 8px; letter-spacing: -.01em; }
+  .section-title p { color: var(--ink-2); max-width: 620px; margin: 14px auto 0; font-size: .97rem; }
+  .bg-soft { background: var(--bg-soft); }
+
+  /* ===== 演进时间线 ===== */
+  .evo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .evo-card {
+    background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 28px 24px; position: relative; transition: all .25s;
+  }
+  .evo-card:hover { transform: translateY(-4px); box-shadow: 0 14px 34px rgba(15,23,42,.08); }
+  .evo-card .era { font-size: .72rem; font-weight: 700; letter-spacing: .1em; color: var(--ink-3); }
+  .evo-card h3 { font-size: 1.15rem; font-weight: 800; margin: 10px 0 8px; }
+  .evo-card p { font-size: .87rem; color: var(--ink-2); }
+  .evo-card .tag {
+    display: inline-block; margin-top: 14px; font-size: .76rem; font-weight: 700;
+    padding: 4px 12px; border-radius: 999px;
+  }
+  .evo-card.now .tag { background: rgba(67,97,238,.1); color: var(--primary); }
+  .evo-card.future { border-color: rgba(67,97,238,.45); background: linear-gradient(180deg, rgba(67,97,238,.05), #fff 40%); }
+  .evo-card.future .tag { background: var(--grad); color: #fff; }
+  .evo-card .badge-24 {
+    position: absolute; top: -12px; right: 18px; background: var(--grad); color: #fff;
+    font-size: .7rem; font-weight: 800; padding: 4px 12px; border-radius: 999px; letter-spacing: .05em;
+  }
+  .evo-note {
+    margin-top: 20px; text-align: center; font-size: .85rem; color: var(--ink-3);
+  }
+
+  /* ===== AI 工厂 ===== */
+  .factory-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }
+  .factory-card {
+    background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 26px 24px; transition: all .25s; position: relative;
+  }
+  .factory-card:hover { transform: translateY(-4px); box-shadow: 0 14px 34px rgba(15,23,42,.08); border-color: rgba(67,97,238,.35); }
+  .factory-card .step {
+    position: absolute; top: 20px; right: 22px; font-size: 2rem; font-weight: 800;
+    color: rgba(67,97,238,.12); line-height: 1;
+  }
+  .factory-card .icon { width: 46px; height: 46px; border-radius: 12px; background: rgba(67,97,238,.1);
+    display: flex; align-items: center; justify-content: center; font-size: 1.35rem; margin-bottom: 16px; }
+  .factory-card h3 { font-size: 1.03rem; font-weight: 700; margin-bottom: 8px; }
+  .factory-card p { font-size: .87rem; color: var(--ink-2); }
+  .factory-quote {
+    margin: 26px auto 0; max-width: 760px; text-align: center;
+    background: rgba(67,97,238,.05); border: 1px dashed rgba(67,97,238,.35);
+    border-radius: 14px; padding: 18px 26px; font-size: .92rem; color: var(--ink-2);
+  }
+  .factory-quote b { color: var(--primary); }
+
+  /* ===== 数字员工 ===== */
+  .staff-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; }
+  .staff-card {
+    background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 26px 24px; display: flex; gap: 18px; align-items: flex-start; transition: all .25s;
+  }
+  .staff-card:hover { transform: translateY(-4px); box-shadow: 0 14px 34px rgba(15,23,42,.08); border-color: rgba(114,9,183,.35); }
+  .staff-card .s-avatar {
+    flex: 0 0 52px; width: 52px; height: 52px; border-radius: 14px;
+    background: var(--grad); display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; color: #fff;
+  }
+  .staff-card:nth-child(2) .s-avatar { background: linear-gradient(135deg, #0ea5e9, #2563eb); }
+  .staff-card:nth-child(3) .s-avatar { background: linear-gradient(135deg, #10b981, #059669); }
+  .staff-card:nth-child(4) .s-avatar { background: linear-gradient(135deg, #f59e0b, #ea580c); }
+  .staff-card:nth-child(5) .s-avatar { background: linear-gradient(135deg, #f43f5e, #be123c); }
+  .staff-card:nth-child(6) .s-avatar { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+  .staff-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; }
+  .staff-card .s-role { font-size: .74rem; color: var(--primary); font-weight: 700; margin-bottom: 8px; letter-spacing: .04em; }
+  .staff-card p { font-size: .86rem; color: var(--ink-2); }
+  .staff-card .s-tags { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .staff-card .s-tags span {
+    font-size: .72rem; color: var(--ink-2); background: var(--bg-soft);
+    border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px;
+  }
+  .staff-note { text-align: center; margin-top: 24px; font-size: .87rem; color: var(--ink-3); }
+  .staff-note b { color: var(--primary); }
+
+  /* ===== 供电站 ===== */
+  .power-wrap {
+    background:
+      radial-gradient(900px 400px at 90% 0%, rgba(14,165,233,.14), transparent 55%),
+      radial-gradient(700px 400px at 5% 100%, rgba(67,97,238,.12), transparent 55%),
+      #0d1428;
+    border-radius: 26px; padding: 56px 44px; color: #fff; position: relative; overflow: hidden;
+  }
+  .power-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 44px; align-items: center; }
+  .power-left .eyebrow { color: #7dd3fc; font-size: .8rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+  .power-left h2 { font-size: clamp(1.7rem, 3vw, 2.3rem); font-weight: 800; margin: 10px 0 16px; line-height: 1.25; }
+  .power-left p { color: #a5b4d0; font-size: .97rem; margin-bottom: 10px; }
+  .power-left p b { color: #fff; }
+  .power-feats { margin-top: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .power-feat {
+    background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+    border-radius: 12px; padding: 13px 15px; font-size: .85rem; color: #cbd5f5;
+  }
+  .power-feat .pf-icon { font-size: 1.1rem; margin-right: 7px; }
+  .power-viz {
+    background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.12);
+    border-radius: 18px; padding: 26px; text-align: center;
+  }
+  .power-viz .substation {
+    width: 110px; height: 110px; margin: 0 auto; border-radius: 22px;
+    background: linear-gradient(135deg, #0ea5e9, #4361ee); display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 4px; font-size: 2.2rem;
+    box-shadow: 0 0 44px rgba(14,165,233,.45);
+  }
+  .power-viz .substation .st-label { font-size: .72rem; font-weight: 700; letter-spacing: .1em; color: rgba(255,255,255,.9); }
+  .power-viz .cable { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 18px 0; color: #7dd3fc; font-size: .8rem; font-weight: 600; }
+  .power-viz .cable::before, .power-viz .cable::after {
+    content: ""; flex: 1; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(125,211,252,.6), transparent);
+  }
+  .power-viz .models { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+  .power-viz .models span {
+    font-size: .74rem; padding: 5px 12px; border-radius: 999px;
+    background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); color: #dbe3ff;
+  }
+  .power-viz .os-row { margin-top: 18px; display: flex; justify-content: center; gap: 10px; }
+  .power-viz .os-row span {
+    font-size: .74rem; font-weight: 700; padding: 6px 14px; border-radius: 10px;
+    background: rgba(255,255,255,.1); color: #fff; border: 1px solid rgba(255,255,255,.18);
+  }
+  .power-cta { margin-top: 26px; }
+
+  /* ===== 为什么选择 ===== */
+  .value-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+  .value-item { padding: 24px; border-radius: var(--radius); background: #fff; border: 1px solid var(--line); transition: all .25s; }
+  .value-item:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(15,23,42,.07); }
+  .value-item .v-icon { font-size: 1.5rem; margin-bottom: 12px; }
+  .value-item h3 { font-size: .98rem; font-weight: 700; margin-bottom: 6px; }
+  .value-item p { font-size: .85rem; color: var(--ink-2); }
+
+  /* ===== CTA ===== */
+  .cta {
+    background: var(--grad); border-radius: 24px; max-width: 1000px; margin: 0 auto;
+    padding: 56px 40px; text-align: center; color: #fff; position: relative; overflow: hidden;
+  }
+  .cta::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(500px 260px at 80% -20%, rgba(255,255,255,.25), transparent 60%);
+  }
+  .cta h2 { font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 800; position: relative; }
+  .cta p { opacity: .9; margin: 14px auto 0; max-width: 540px; font-size: .95rem; position: relative; }
+  .cta .btn { margin-top: 30px; position: relative; padding: 14px 36px; font-size: .96rem; }
+  .cta .note { margin-top: 16px; font-size: .78rem; opacity: .7; position: relative; }
+
+  /* ===== Footer ===== */
+  footer { background: var(--night); color: #cbd5e1; padding: 48px 24px 32px; }
+  .footer-inner { max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px; justify-content: space-between; }
+  .footer-brand { max-width: 320px; }
+  .footer-brand .brand { color: #fff; margin-bottom: 12px; }
+  .footer-brand p { font-size: .84rem; color: #94a3b8; }
+  .footer-col h4 { color: #fff; font-size: .88rem; margin-bottom: 14px; }
+  .footer-col a { display: block; font-size: .84rem; color: #94a3b8; margin-bottom: 9px; }
+  .footer-col a:hover { color: #fff; }
+  .footer-bottom {
+    max-width: 1200px; margin: 36px auto 0; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.1);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+    font-size: .78rem; color: #64748b;
+  }
+
+  /* ===== 滚动淡入 ===== */
+  .reveal { opacity: 0; transform: translateY(22px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* ===== Mobile ===== */
+  @media (max-width: 860px) {
+    .nav-links { display: none; }
+    .hero { padding: 70px 20px 50px; }
+    section { padding: 56px 18px; }
+    .evo-grid { grid-template-columns: 1fr; }
+    .power-grid { grid-template-columns: 1fr; }
+    .power-wrap { padding: 40px 26px; }
+    .line-node { width: 84px; }
+    .line-viz .nodes { gap: 8px; }
+  }
+  @media (max-width: 520px) {
+    .line-viz { overflow-x: auto; padding-bottom: 6px; }
+    .line-viz .nodes { min-width: 560px; justify-content: flex-start; }
+    .line-node { flex: 0 0 100px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="brand"><span class="logo">🐙</span>NineClaw</a>
+    <div class="nav-links">
+      <a href="#evolution">AI 协作新范式</a>
+      <a href="#factory">AI 工厂</a>
+      <a href="#staff">数字员工</a>
+      <a href="#power">供电站</a>
+      <a href="#about">关于我们</a>
+    </div>
+    <div class="nav-actions">
+      <a href="https://console.nineclaw.cc" class="btn btn-ghost">客户登录</a>
+      <a href="#contact" class="btn btn-primary">联系销售</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="hero-badge"><span class="dot"></span>NineClaw AI 工厂 · 24 小时不停产</div>
+  <h1>你的 AI 工厂<br><span class="grad-text">24 小时不停产</span></h1>
+  <p class="sub">开一个任务，就是拉一条自动化生产线。把一群 AI 数字员工拖进生产线，让它们替你领任务、写文档、写代码、做分析、服务客户——<b style="color:#e2e8ff">只有需要你拍板时，它们才会停下来等你</b>。</p>
+  <div class="hero-cta">
+    <a href="#contact" class="btn btn-light">🚀 预约演示</a>
+    <a href="#factory" class="btn btn-line">看看生产线怎么跑</a>
+  </div>
+
+  <!-- 生产线视觉 -->
+  <div class="line-viz">
+    <div class="track"></div>
+    <div class="nodes">
+      <div class="line-node manager"><div class="avatar">🧭</div><div class="role">项目经理</div><div class="status">24h 在线</div></div>
+      <div class="line-node pm"><div class="avatar">📋</div><div class="role">产品经理</div><div class="status">24h 在线</div></div>
+      <div class="line-node dev"><div class="avatar">💻</div><div class="role">研发</div><div class="status">24h 在线</div></div>
+      <div class="line-node qa"><div class="avatar">🧪</div><div class="role">测试</div><div class="status">24h 在线</div></div>
+      <div class="line-node mkt"><div class="avatar">📣</div><div class="role">市场</div><div class="status">24h 在线</div></div>
+    </div>
+    <div class="line-legend">
+      <span>人 × 人 协作：<b>8h/天</b></span>
+      <span>人 × AI 协作：AI 是个人工具</span>
+      <span>AI × AI 协作：<b>24h/天</b> ← 我们做这个</span>
+    </div>
+  </div>
+</header>
+
+<!-- 演进 -->
+<section id="evolution">
+  <div class="section-inner">
+    <div class="section-title reveal">
+      <div class="eyebrow">协作新范式</div>
+      <h2>AI 助手已是标配，我们讲的是下一步</h2>
+      <p>每个人都有几个 AI 助手，这不用再证明了。真正的变化是：让 AI 们自己协作起来，像一条生产线一样，7×24 小时运转。</p>
+    </div>
+    <div class="evo-grid">
+      <div class="evo-card reveal">
+        <div class="era">PAST · 过去</div>
+        <h3>人 × 人</h3>
+        <p>招人、培训、排班、管理。团队协作靠人盯人，一天只有 8 小时能干活。</p>
+        <span class="tag">8h / 天</span>
+      </div>
+      <div class="evo-card now reveal">
+        <div class="era">NOW · 现在</div>
+        <h3>人 × AI</h3>
+        <p>AI 是每个人的效率工具：问问题、写初稿、提建议。但 AI 之间互不协作，人依然是瓶颈。</p>
+        <span class="tag">AI 助手 · 个人工具</span>
+      </div>
+      <div class="evo-card future reveal">
+        <div class="badge-24">24H</div>
+        <div class="era">NEXT · 下一步</div>
+        <h3>AI × AI</h3>
+        <p>AI 数字员工在一个任务里领活、分工、互相交付、滚动推进。你睡觉，生产线不停。</p>
+        <span class="tag">AI 工厂 · 24h/天</span>
+      </div>
+    </div>
+    <p class="evo-note reveal">人只在白天做四件事：<b style="color:var(--primary)">下任务 · 观察 · 检验 · 修正</b></p>
+  </div>
+</section>
+
+<!-- AI 工厂 -->
+<section id="factory" class="bg-soft">
+  <div class="section-inner">
+    <div class="section-title reveal">
+      <div class="eyebrow">主打产品</div>
+      <h2>AI 工厂：全自动 AI 生产线</h2>
+      <p>以前你手搓 AI 工具，现在我们卖你一条完整生产线——协作、分工、任务流转、交付验收，全自动。</p>
+    </div>
+    <div class="factory-grid">
+      <div class="factory-card reveal">
+        <div class="step">01</div>
+        <div class="icon">🏭</div>
+        <h3>开任务 = 拉生产线</h3>
+        <p>项目拉起来，就是一个工作区、一个帖子。项目经理、产品、研发、测试、市场，各就各位。</p>
+      </div>
+      <div class="factory-card reveal">
+        <div class="step">02</div>
+        <div class="icon">🤖</div>
+        <h3>拖入数字员工</h3>
+        <p>需要什么角色，就从旁边把标准数字人拖进来。你 5 个 AI、我 3 个 AI，混合编组开工。</p>
+      </div>
+      <div class="factory-card reveal">
+        <div class="step">03</div>
+        <div class="icon">⚙️</div>
+        <h3>24 小时滚动推进</h3>
+        <p>AI 与 AI 之间领任务、写文档、交代码、互相评审，在你授权范围内自动往前滚。</p>
+      </div>
+      <div class="factory-card reveal">
+        <div class="step">04</div>
+        <div class="icon">⏸️</div>
+        <h3>该你拍板时停下</h3>
+        <p>需要项目经理或你本人确认的节点，它们会停下来等你。你只做决策，不做执行。</p>
+      </div>
+    </div>
+    <div class="factory-quote reveal">
+      💡 未来组织不是按"人的岗位"定义的，而是按 <b>AI 职能</b>定义的。AI 工厂就是你的<b>无人值守工厂</b>——你管理，AI 生产。
+    </div>
+  </div>
+</section>
+
+<!-- 数字员工 -->
+<section id="staff">
+  <div class="section-inner">
+    <div class="section-title reveal">
+      <div class="eyebrow">标准数字员工</div>
+      <h2>岗位已定义好，拖入即可上岗</h2>
+      <p>不同岗位 80%~90% 的工作是相通的，我们帮你定义好标准能力包。需要时拉进生产线，注入你的资料，它就是你的员工。</p>
+    </div>
+    <div class="staff-grid">
+      <div class="staff-card reveal">
+        <div class="s-avatar">💻</div>
+        <div>
+          <h3>研发数字人</h3>
+          <div class="s-role">开发 · 代码 · 技术文档</div>
+          <p>按需求写代码、代码评审、接口联调、技术方案输出，是生产线上最勤劳的工程师。</p>
+          <div class="s-tags"><span>需求转代码</span><span>代码评审</span><span>技术文档</span></div>
+        </div>
+      </div>
+      <div class="staff-card reveal">
+        <div class="s-avatar">🧪</div>
+        <div>
+          <h3>测试数字人</h3>
+          <div class="s-role">质量 · 用例 · 缺陷</div>
+          <p>设计测试用例、执行自动化回归、输出缺陷报告，把质量关口守得死死的。</p>
+          <div class="s-tags"><span>用例设计</span><span>自动化测试</span><span>缺陷报告</span></div>
+        </div>
+      </div>
+      <div class="staff-card reveal">
+        <div class="s-avatar">🎧</div>
+        <div>
+          <h3>售后数字人</h3>
+          <div class="s-role">工单 · 排查 · 知识库</div>
+          <p>响应工单、初步排查、沉淀知识库，把重复的售后问题在夜间也消化掉。</p>
+          <div class="s-tags"><span>工单响应</span><span>故障排查</span><span>知识库维护</span></div>
+        </div>
+      </div>
+      <div class="staff-card reveal">
+        <div class="s-avatar">💬</div>
+        <div>
+          <h3>客服数字人</h3>
+          <div class="s-role">接待 · 咨询 · 7×24</div>
+          <p>全天候接待客户咨询，常见问题秒回，复杂问题转人工并带好上下文。</p>
+          <div class="s-tags"><span>7×24 接待</span><span>智能问答</span><span>人机协同</span></div>
+        </div>
+      </div>
+      <div class="staff-card reveal">
+        <div class="s-avatar">📈</div>
+        <div>
+          <h3>销售数字人</h3>
+          <div class="s-role">线索 · 方案 · 报价</div>
+          <p>跟进线索、准备方案初稿、整理报价材料，让销售把时间花在见面和成交上。</p>
+          <div class="s-tags"><span>线索跟进</span><span>方案初稿</span><span>报价准备</span></div>
+        </div>
+      </div>
+      <div class="staff-card reveal">
+        <div class="s-avatar">🧩</div>
+        <div>
+          <h3>职业技能包</h3>
+          <div class="s-role">文档 · PPT · 视频 · 脚本</div>
+          <p>写 PPT、写文档、剪视频、写脚本……通用技能按包注入，任何数字人都能即插即用。</p>
+          <div class="s-tags"><span>PPT 生成</span><span>文档成稿</span><span>脚本编写</span><span>内容制作</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="staff-note reveal">每个数字人都是一个 <b>标准基础组件</b>，可叠加你的私有资料与专属技能，定义成你公司的岗位。</p>
+  </div>
+</section>
+
+<!-- 供电站 -->
+<section id="power" class="bg-soft">
+  <div class="section-inner">
+    <div class="power-wrap reveal">
+      <div class="power-grid">
+        <div class="power-left">
+          <div class="eyebrow">⚡ NineClaw 供电站</div>
+          <h2>数字员工的电，<br>来自你的供电站</h2>
+          <p>再先进的生产线也要电。AI 工厂的每一度电，都来自 <b>NineClaw 供电站（Token 网关）</b>——部署在客户侧的变电站，把外面大模型的电力汇聚成一路，稳定供给你的数字员工。</p>
+          <p>Windows 版、Linux 版都已就绪，装好即用。</p>
+          <div class="power-feats">
+            <div class="power-feat"><span class="pf-icon">🔌</span>统一接入多家大模型</div>
+            <div class="power-feat"><span class="pf-icon">🛣️</span>智能路由，自动择优</div>
+            <div class="power-feat"><span class="pf-icon">🗝️</span>员工 Key 分发与权限</div>
+            <div class="power-feat"><span class="pf-icon">🧾</span>逐笔计费 · 话单透明</div>
+          </div>
+          <div class="power-cta">
+            <a href="#contact" class="btn btn-light">获取供电站方案 →</a>
+          </div>
+        </div>
+        <div class="power-viz">
+          <div class="substation">⚡<div class="st-label">NINECLAW 供电站</div></div>
+          <div class="cable">大模型电力 · 汇入变电站</div>
+          <div class="models">
+            <span>DeepSeek</span><span>OpenAI</span><span>Kimi</span><span>通义千问</span><span>文心一言</span>
+          </div>
+          <div class="cable">稳定输出 · 供给生产线</div>
+          <div class="os-row"><span>🪟 Windows</span><span>🐧 Linux</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 为什么选择 -->
+<section id="why">
+  <div class="section-inner">
+    <div class="section-title reveal">
+      <div class="eyebrow">为什么选择 NineClaw</div>
+      <h2>生产线、数字员工、供电站，我们都准备好了</h2>
+      <p>不靠低价吸引，靠体系交付。你要做的，就是把任务拉起来。</p>
+    </div>
+    <div class="value-grid">
+      <div class="value-item reveal"><div class="v-icon">🏭</div><h3>成套交付</h3><p>生产线 + 数字员工 + 供电站一体交付，不是零散工具，而是一套能跑的体系。</p></div>
+      <div class="value-item reveal"><div class="v-icon">🛡️</div><h3>数据安全</h3><p>调用链路加密，敏感信息脱敏，不做请求/响应内容留存，供电站部署在客户侧。</p></div>
+      <div class="value-item reveal"><div class="v-icon">🌐</div><h3>多模型接入</h3><p>主流大模型统一接入，一套体系多模型可选，降低单一依赖风险。</p></div>
+      <div class="value-item reveal"><div class="v-icon">⚡</div><h3>稳定可靠</h3><p>多线路冗余与故障切换，7×24 监控，保障生产线不断电。</p></div>
+      <div class="value-item reveal"><div class="v-icon">🧾</div><h3>账单透明</h3><p>逐笔消费详单、月度账单、余额流水，每一分钱可追溯。</p></div>
+      <div class="value-item reveal"><div class="v-icon">🤝</div><h3>专属支持</h3><p>企业专属对接人：接入指导、使用培训、售后响应全流程服务。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="contact">
+  <div class="section-inner">
+    <div class="cta reveal">
+      <h2>准备好让 AI 24 小时开工了吗？</h2>
+      <p>留下您的联系方式，我们的企业顾问将在 1 个工作日内与您联系，为您演示 AI 工厂、规划数字员工与供电站方案。</p>
+      <a href="mailto:sales@nineclaw.cc" class="btn">📮 联系销售</a>
+      <div class="note">NineClaw 平台为企业签约客户提供服务，暂不开放公开注册。</div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer id="about">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="brand"><span class="logo">🐙</span>NineClaw</div>
+      <p>九爪章科技 · AI 工厂与数字员工服务商。让 AI 协作取代人工盯班，让每一条生产线 24 小时运转。</p>
+    </div>
+    <div class="footer-col">
+      <h4>产品</h4>
+      <a href="#factory">AI 工厂</a>
+      <a href="#staff">数字员工</a>
+      <a href="#power">供电站</a>
+    </div>
+    <div class="footer-col">
+      <h4>入口</h4>
+      <a href="https://console.nineclaw.cc">客户中心</a>
+      <a href="https://partner.nineclaw.cc">渠道中心</a>
+      <a href="https://admin.nineclaw.cc">管理后台</a>
+    </div>
+    <div class="footer-col">
+      <h4>公司</h4>
+      <a href="#about">关于我们</a>
+      <a href="#contact">联系我们</a>
+      <a href="mailto:sales@nineclaw.cc">sales@nineclaw.cc</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 九爪章科技 · NineClaw.cc 保留所有权利</span>
+    <span>ICP 备案号：待填入</span>
+  </div>
+</footer>
+
+<script>
+  // 滚动淡入（带兜底：1.2s 后未触发的元素强制显示，避免 IO 失效时内容不可见）
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.1 });
+    revealEls.forEach(el => io.observe(el));
+    setTimeout(() => { revealEls.forEach(el => el.classList.add('in')); }, 1200);
+  } else {
+    revealEls.forEach(el => el.classList.add('in'));
+  }
+</script>
+
+</body>
+</html>
